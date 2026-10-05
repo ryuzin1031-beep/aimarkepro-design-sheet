@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"></head><body>
+<title>LP・HPデザイン制作書</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: 1枚のヒアリング票。上部固定の記入状況バー＋セクションごとの記入欄、最後に送信まとめ */
+:root{
+  --bg:#f4f1ea; --paper:#fffdf9; --input:#ffffff; --ink:#15213a; --sub:#5d6475; --line:#ddd6c8;
+  --strong:#0f1b2e; --gold:#9a7634; --gold-soft:#f1e7d0; --focus:#c6a45c;
+  --btn-bg:#0f1b2e; --btn-fg:#ffffff; --ok:#2e7350; --warn:#a3402b;
+  --f-display:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-body:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c1220; --paper:#131b2c; --input:#0f1626; --ink:#ebe6db; --sub:#a2a8b5; --line:#2a3550;
+    --strong:#f1ead9; --gold:#d3b676; --gold-soft:#2b2a22; --focus:#d3b676;
+    --btn-bg:#d3b676; --btn-fg:#0c1220; --ok:#7cc79e; --warn:#ec8f78; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c1220; --paper:#131b2c; --input:#0f1626; --ink:#ebe6db; --sub:#a2a8b5; --line:#2a3550;
+  --strong:#f1ead9; --gold:#d3b676; --gold-soft:#2b2a22; --focus:#d3b676;
+  --btn-bg:#d3b676; --btn-fg:#0c1220; --ok:#7cc79e; --warn:#ec8f78; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.8;margin:0;padding-inline:16px}
+.wrap{max-width:820px;margin:0 auto;padding-block:44px 120px}
+h1,h2,h3{font-family:var(--f-display);color:var(--strong);text-wrap:balance;margin:0}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+/* head */
+.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--gold);font-weight:700}
+.sheet-head h1{font-size:clamp(26px,5vw,36px);line-height:1.35;margin-top:10px}
+.lead{margin:14px 0 0;color:var(--sub)}
+.notes{margin:22px 0 0;padding:16px 20px;border-left:3px solid var(--gold);background:var(--paper);display:grid;gap:6px;font-size:13.5px;color:var(--sub);list-style:none}
+.notes b{color:var(--ink)}
+
+/* progress */
+.progress{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);margin-top:28px;padding-block:12px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.progress .count{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{flex:1 1 160px;height:6px;background:var(--line);border-radius:3px;overflow:hidden;min-width:120px}
+.bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}
+.saved{font-size:12px;color:var(--sub);white-space:nowrap}
+.jump{font:inherit;font-size:13px;font-weight:700;background:none;border:1px solid var(--strong);color:var(--strong);border-radius:999px;padding:5px 16px;cursor:pointer}
+
+/* section */
+.sec{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:28px 24px;margin-top:20px}
+.sec-h{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.sec-no{font-family:var(--f-display);color:var(--gold);font-size:26px;font-variant-numeric:tabular-nums;line-height:1}
+.sec h2{font-size:21px}
+.key{font-size:11.5px;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:1px 10px}
+.desc{color:var(--sub);font-size:13.5px;margin:10px 0 0}
+.fields{display:grid;gap:22px;margin-top:22px}
+.field{min-width:0}
+.field .l{display:block;font-weight:700;font-size:14px;margin-bottom:8px}
+.field .h{display:block;color:var(--sub);font-size:12.5px;margin:-4px 0 8px}
+input[type=text],textarea{width:100%;border:1px solid var(--line);background:var(--input);color:var(--ink);border-radius:4px;padding:10px 12px;font:inherit;font-size:14.5px}
+textarea{min-height:92px;resize:vertical}
+input::placeholder,textarea::placeholder{color:var(--sub);opacity:.75}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.sub-h{font-family:var(--f-display);font-size:16px;color:var(--strong);padding-top:6px;border-top:1px dashed var(--line);margin-top:4px}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.chip span{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:6px 15px;font-size:13.5px;cursor:pointer;background:var(--input);user-select:none}
+.chip span:hover{border-color:var(--gold)}
+.chip input:checked + span{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+.chip input:focus-visible + span{outline:2px solid var(--focus);outline-offset:2px}
+.chip.multi input:checked + span::before{content:"✓ "}
+
+/* tone scale */
+.scale{display:grid;gap:4px}
+.scale-row{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
+.scale-row:last-child{border-bottom:none}
+.scale-row .lt{text-align:right;font-size:13.5px}
+.scale-row .rt{font-size:13.5px}
+.dots{display:flex;gap:6px}
+.dot{position:relative}
+.dot input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.dot span{display:flex;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);align-items:center;justify-content:center;font-size:13px;font-variant-numeric:tabular-nums;cursor:pointer;background:var(--input);color:var(--sub)}
+.dot input:checked + span{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+.dot input:focus-visible + span{outline:2px solid var(--focus);outline-offset:2px}
+
+/* send */
+.send{background:var(--paper);border:1px solid var(--strong);border-radius:6px;padding:30px 24px;margin-top:32px}
+.send h2{font-size:22px}
+.btn{font:inherit;font-weight:700;font-size:15px;border-radius:999px;padding:13px 30px;cursor:pointer;border:1px solid var(--btn-bg);background:var(--btn-bg);color:var(--btn-fg);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;color:var(--strong);border-color:var(--strong)}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.err{color:var(--warn);font-size:13.5px;margin-top:10px;font-weight:700}
+.result textarea{min-height:300px;font-size:13px;line-height:1.7;font-family:ui-monospace,"Osaka-Mono",Menlo,monospace;margin-top:16px}
+.status{font-size:13.5px;margin-top:12px;font-weight:700;color:var(--ok)}
+.addr{margin-top:16px;font-size:13.5px;color:var(--sub);display:grid;gap:4px}
+.addr code{font-family:inherit;color:var(--ink);font-weight:700;user-select:all}
+.danger{font:inherit;font-size:12.5px;background:none;border:none;color:var(--sub);text-decoration:underline;cursor:pointer;padding:0}
+.confirm{display:inline-flex;gap:10px;align-items:center;font-size:12.5px}
+.confirm button{font:inherit;font-size:12.5px;cursor:pointer;border-radius:999px;padding:3px 12px;border:1px solid var(--line);background:var(--input);color:var(--ink)}
+.foot{margin-top:28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--sub)}
+
+@media (max-width:640px){
+  .sec,.send{padding:22px 16px}
+  .pair{grid-template-columns:1fr}
+  .scale-row{grid-template-columns:1fr 1fr;row-gap:8px}
+  .scale-row .lt{text-align:left;grid-column:1}
+  .scale-row .rt{text-align:right;grid-column:2;grid-row:1}
+  .scale-row .dots{grid-column:1 / -1;justify-content:space-between}
+}
+@media (prefers-reduced-motion:reduce){ .bar i{transition:none} }
+</style>
+
+<div class="wrap">
+  <header class="sheet-head">
+    <div class="eyebrow">AIマーケプロ ｜ AI制作書 04-08</div>
+    <h1>ハイクオリティLP・HP<br>デザイン制作書</h1>
+    <p class="lead">「ちゃんとデザインされている」と一目で伝わるLP・HPを作るための、デザイン特化のヒアリングシートです。このページで記入して、最後の「記入内容をまとめる」から送ってください。</p>
+    <ul class="notes">
+      <li><b>全部埋めなくて大丈夫です。</b>空欄は参考サイトから読み取るか方向性に合わせて補い、補った箇所は納品時にすべてお伝えします。</li>
+      <li><b>迷ったら「3. 参考デザイン」と「4. トーンの目盛り」だけ</b>埋めてください。仕上がりを一番左右する項目です。</li>
+      <li>記入内容はこの端末のブラウザに自動で下書き保存されます。途中で閉じても続きから書けます。</li>
+    </ul>
+  </header>
+
+  <div class="progress" aria-live="polite">
+    <span class="count" id="count">記入済み 0 / 14</span>
+    <span class="bar" aria-hidden="true"><i id="barFill"></i></span>
+    <span class="saved" id="saved"></span>
+    <button class="jump" type="button" id="jumpSend">送信へ ↓</button>
+  </div>
+
+  <form id="sheet" novalidate>
+    <div id="sections"></div>
+
+    <section class="send" id="send">
+      <h2>記入内容を送る</h2>
+      <p class="desc">お名前と連絡先だけ入っていれば送れます。ボタンを押すと、記入した内容が制作書の形にまとまります。</p>
+      <div class="btn-row">
+        <button class="btn" type="submit" id="build">記入内容をまとめる</button>
+      </div>
+      <div class="err" id="err" hidden></div>
+
+      <div class="result" id="result" hidden>
+        <p class="desc" style="margin-top:22px">下の内容を、コピーしてメールかLINEで送ってください。</p>
+        <textarea id="out" readonly aria-label="まとめた記入内容"></textarea>
+        <div class="btn-row">
+          <button class="btn" type="button" id="copy">内容をコピーする</button>
+          <a class="btn ghost" id="mail" href="#">メールで送る</a>
+          <a class="btn ghost" id="line" href="#" target="_blank" rel="noopener">LINEで送る</a>
+        </div>
+        <div class="status" id="copied" hidden></div>
+        <div class="addr">
+          <span>送り先メール：<code>ryuzin1031@gmail.com</code></span>
+          <span>X（DM）：<code>@ryuu_enjoy</code></span>
+          <span>メール・LINEのボタンで開かないときは、コピーした内容を上の宛先に貼り付けて送ってください。</span>
+        </div>
+      </div>
+    </section>
+  </form>
+
+  <div class="foot">
+    <span>AIマーケプロ ｜ ハイクオリティLP・HPデザイン制作書</span>
+    <span id="clearWrap"><button class="danger" type="button" id="clear">記入内容をすべて消す</button></span>
+  </div>
+</div>
+
+<script>
+(function(){
+const TAKE = ["配色","フォント","レイアウト","余白感","動き","写真の雰囲気","ボタンの形"];
+const SECTIONS = [
+  {no:"",title:"ご記入者",desc:"送っていただいた内容の確認に使います。",fields:[
+    {id:"company",label:"会社名・屋号",type:"text",ph:"例: 株式会社〇〇",pair:true},
+    {id:"person",label:"お名前",type:"text",ph:"例: 山田 太郎",req:true,pair:true},
+    {id:"contact",label:"連絡先（メール・LINE ID・電話など）",type:"text",ph:"例: taro@example.com",req:true}
+  ]},
+  {no:"01",title:"制作物とゴール",fields:[
+    {id:"kind",label:"制作するもの",type:"radio",opts:["LP（1ページ）","HP（複数セクション・複数ページ）","LPとHPの両方","相談したい"]},
+    {id:"name",label:"商品・サービス・会社名",type:"text",ph:"例: AIマーケプロ"},
+    {id:"goal",label:"サイトのゴール（1つ）",type:"text",ph:"例: 無料相談の申込／採用エントリー／ブランド認知"},
+    {id:"target",label:"メインターゲット",type:"text",ph:"例: 30代の経営者／就活中の大学生"},
+    {id:"impression",label:"見た人に抱いてほしい第一印象",type:"text",ph:"例: 「この会社、信頼できそう」「なんか面白そう」"},
+    {id:"materials",label:"内容の資料（あれば）",type:"textarea",ph:"例: LP制作書の納品物／営業資料のURL／既存サイトURL"}
+  ]},
+  {no:"02",title:"ブランドの人格",desc:"デザインの軸になる部分です。人に例えるとどんな人か、で考えると決めやすくなります。",fields:[
+    {id:"adj",label:"ブランドを表す形容詞 3つ",type:"text",ph:"例: 誠実・スピード感・親しみやすい"},
+    {id:"ngadj",label:"逆に「こう見られたくない」形容詞",type:"text",ph:"例: 安っぽい・堅苦しい・怪しい"},
+    {id:"persona",label:"人に例えると",type:"text",ph:"例: 仕事ができる20代後半のコンサル／地元で愛される職人"},
+    {id:"diff",label:"競合サイトとの見た目の差別化",type:"textarea",ph:"例: 競合は青系の堅い印象が多い → 黒×ネオンで尖らせたい"},
+    {id:"rules",label:"既存のブランドルール（あれば）",type:"textarea",ph:"ロゴ規定・指定色・指定フォントなど"}
+  ]},
+  {no:"03",title:"参考デザイン",key:"最重要",desc:"参考サイトは「何を真似したいか」まで選ぶと精度が大きく上がります。配色・フォント・余白は実際のコードから数値で読み取って再現します。",fields:[
+    {id:"ref1",label:"参考URL ①",type:"text",ph:"https://"},
+    {id:"ref1t",label:"①で真似したい要素（複数可）",type:"check",opts:TAKE},
+    {id:"ref2",label:"参考URL ②",type:"text",ph:"https://"},
+    {id:"ref2t",label:"②で真似したい要素（複数可）",type:"check",opts:TAKE},
+    {id:"ref3",label:"参考URL ③",type:"text",ph:"https://"},
+    {id:"ref3t",label:"③で真似したい要素（複数可）",type:"check",opts:TAKE},
+    {id:"ngsite",label:"参考にしたくないサイト（あれば）と、嫌なところ",type:"text",ph:"例: https://… ／ 情報が詰まりすぎていて読みにくい"},
+    {id:"adopt",label:"参考の取り入れ方",type:"radio",opts:["ほぼそのまま再現したい","雰囲気は踏襲しつつ、もう一段洗練させたい（おすすめ）","複数サイトの良いところを組み合わせたい","要素だけ参考に、オリジナル性を重視したい"]}
+  ]},
+  {no:"04",title:"トーンの目盛り",key:"最重要",desc:"近いほうの数字を選んでください。3 は「どちらでもない」です。",fields:[
+    {id:"tone",type:"scale",rows:[
+      ["minimal","ミニマル・余白多め","情報量多め・にぎやか"],
+      ["calm","静か・落ち着き","動きがある・エネルギッシュ"],
+      ["lux","高級・上品","親しみ・カジュアル"],
+      ["trad","伝統・王道","先進・テック・尖った"],
+      ["dark","ライト（白ベース）","ダーク（黒ベース）"],
+      ["round","直線・シャープ","丸み・やわらか"],
+      ["photo","写真が主役","文字・タイポグラフィが主役"]
+    ]}
+  ]},
+  {no:"05",title:"カラー",desc:"色数を絞るほど洗練されて見えます。基本は「ベース60%・メイン30%・アクセント10%」で組み立てます。",fields:[
+    {id:"cbase",label:"ベースカラー（背景）",type:"text",ph:"例: 白／オフホワイト／ほぼ黒",pair:true},
+    {id:"cmain",label:"メインカラー",type:"text",ph:"例: ネイビー #0f1b2e",pair:true},
+    {id:"caccent",label:"アクセントカラー（1色がおすすめ）",type:"text",ph:"例: ゴールド（ボタン・価格・強調だけに使用）",pair:true},
+    {id:"cng",label:"使ってはいけない色",type:"text",ph:"例: 赤（競合のブランドカラー）",pair:true},
+    {id:"cfree",label:"色のおまかせ度",type:"radio",opts:["完全に指定したい","方向性だけ指定","おまかせ"]}
+  ]},
+  {no:"06",title:"タイポグラフィ（文字のデザイン）",desc:"文字の選び方と、大小のメリハリが仕上がりを最も左右します。",fields:[
+    {id:"font",label:"見出しの書体の方向性",type:"radio",opts:["明朝体（上品・高級・信頼）","ゴシック体（誠実・モダン・読みやすい）","極太・コンデンス体（力強い・尖った・テック）","丸ゴシック・手書き風（やわらか・親しみ）","おまかせ"]},
+    {id:"en",label:"英字の併用",type:"radio",opts:["見出しに英字ラベルを入れたい（ABOUT / SERVICE など）","日本語のみ","おまかせ"]},
+    {id:"jump",label:"文字の強弱",type:"radio",opts:["見出しを極端に大きく・メリハリ強め","標準","控えめで上品に"]},
+    {id:"voice",label:"コピーの文体",type:"radio",opts:["です・ます調","言い切り調","話し言葉","おまかせ"]}
+  ]},
+  {no:"07",title:"レイアウト・構成",fields:[
+    {id:"fv",label:"ファーストビュー（最初に見える画面）の型",type:"radio",opts:["中央に大きなキャッチコピー","左右分割（左にコピー、右に写真）","全面写真＋コピー重ね","動画背景＋コピー","スライドショー","おまかせ"]},
+    {id:"space",label:"余白の取り方",type:"radio",opts:["たっぷり（高級感）","標準","詰め気味（情報量重視）"]},
+    {id:"divide",label:"セクションの区切り方",type:"radio",opts:["背景色を交互に変える","細い線","区切りなしで流れるように","おまかせ"]},
+    {id:"bg",label:"背景のあしらい",type:"radio",opts:["無地","方眼グリッド","ドット","グラデーション","写真","おまかせ"]},
+    {id:"corner",label:"角の形",type:"radio",opts:["直角（シャープ）","少し丸く","ピル型（丸いボタン）","おまかせ"]}
+  ]},
+  {no:"08",title:"ビジュアル素材",fields:[
+    {id:"logo",label:"ロゴ",type:"text",ph:"例: URL／メールで送ります／なし（文字ロゴで作成）"},
+    {id:"photo",label:"写真の用意",type:"radio",opts:["自社で撮影したものがある","参考サイトの写真を使用","フリー素材","AI生成","おまかせ"]},
+    {id:"ptone",label:"写真のトーン",type:"text",ph:"例: 明るく爽やか／暗めでシネマティック／モノクロ"},
+    {id:"face",label:"人物写真",type:"radio",opts:["代表者・スタッフの顔出しOK","顔出しNG","人物は使わない"]},
+    {id:"icon",label:"イラスト・アイコン",type:"radio",opts:["線画アイコン","使わない","おまかせ"]},
+    {id:"lack",label:"写真が足りない場合",type:"radio",opts:["図形・文字のグラフィックで補ってよい","差し込み枠を残しておく"]}
+  ]},
+  {no:"09",title:"動き",desc:"動きは入れすぎないほうが上質に見えます。",fields:[
+    {id:"motion",label:"入れたい動き（複数可）",type:"check",opts:["スクロールでふわっと表示","数字のカウントアップ","ボタン・カードのホバー演出","パララックス（背景と前景の速度差）","横に流れる文字・ロゴ","スライドショー","スマホで画面下に固定の申込ボタン","おまかせ"]},
+    {id:"mstr",label:"動きの強さ",type:"radio",opts:["ほぼなし","控えめ","しっかり"]}
+  ]},
+  {no:"10",title:"載せる内容",desc:"内容が決まっている場合は、LP制作書・HP制作書の納品物を一緒に送っていただければOKです。",fields:[
+    {id:"lp",label:"LPの場合（複数可）",type:"check",opts:["ファーストビュー","悩みの共感","解決策・サービス紹介","選ばれる理由","実績・お客様の声","料金・オファー","比較表","利用の流れ","FAQ","クロージング＋申込ボタン"]},
+    {id:"hp",label:"HPの場合（複数可）",type:"check",opts:["トップ（メインビジュアル）","お知らせ","会社・サービス紹介","事業・サービス詳細","実績・事例","数字で見る〇〇","メンバー紹介","採用情報","会社概要・アクセス","お問い合わせ"]},
+    {id:"content",label:"文章・素材（自由記入）",type:"textarea",ph:"セクションごとの文章、数値実績、料金など。なければ「お任せ」または「参考サイトから」"}
+  ]},
+  {no:"11",title:"品質基準",desc:"基本はすべて対応します。特に重視したいものを選んでください。",fields:[
+    {id:"quality",label:"重視したい項目（複数可）",type:"check",opts:["スマホでの見え方","表示速度","文字の読みやすさ（コントラスト）","SNSでシェアした時の見え方","ブラウザのタブのアイコン","検索エンジン対策の基本"]},
+    {id:"tags",label:"計測タグ（あれば）",type:"text",ph:"例: Googleアナリティクス／広告のコンバージョンタグ"},
+    {id:"dest",label:"申込・問い合わせの送り先",type:"text",ph:"例: GoogleフォームのURL／LINEのURL／メールアドレス"}
+  ]},
+  {no:"12",title:"デザインの進め方",fields:[
+    {id:"plans",label:"デザイン案の数",type:"radio",opts:["1案でOK","方向性の違う2〜3案を見て選びたい（おすすめ）"]},
+    {id:"check",label:"確認のタイミング",type:"radio",opts:["ファーストビューだけ先に確認したい","全体ができてからまとめて確認"]},
+    {id:"rev",label:"修正回数の目安",type:"text",ph:"例: 2回まで"}
+  ]},
+  {no:"13",title:"公開・運用",fields:[
+    {id:"host",label:"公開方法",type:"radio",opts:["GitHub Pages（無料）","自社サーバー","未定（相談したい）"]},
+    {id:"domain",label:"独自ドメイン",type:"text",ph:"例: 取得済み（example.com）／不要",pair:true},
+    {id:"date",label:"公開希望日",type:"text",ph:"例: 11月末まで",pair:true},
+    {id:"update",label:"更新予定",type:"text",ph:"例: 実績を月1回追加／基本更新しない"}
+  ]},
+  {no:"14",title:"その他・自由記入",fields:[
+    {id:"free",label:"伝えておきたいこと、迷っていること、こだわりなど",type:"textarea",ph:"何でもどうぞ"}
+  ]}
+];
+
+const KEY = "aimp-design-sheet-v1";
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+
+/* ---------- render ---------- */
+const root = $("sections");
+SECTIONS.forEach((s, si) => {
+  const sec = el("section", "sec"); sec.id = "s" + si;
+  const h = el("div", "sec-h");
+  if (s.no) h.appendChild(el("span", "sec-no", s.no));
+  h.appendChild(el("h2", null, s.title));
+  if (s.key) h.appendChild(el("span", "key", s.key));
+  sec.appendChild(h);
+  if (s.desc) sec.appendChild(el("p", "desc", s.desc));
+  const box = el("div", "fields");
+  let pairBox = null;
+  s.fields.forEach((f) => {
+    const node = renderField(f);
+    if (f.pair) {
+      if (!pairBox) { pairBox = el("div", "pair"); box.appendChild(pairBox); }
+      pairBox.appendChild(node);
+      if (pairBox.children.length === 2) pairBox = null;
+    } else { pairBox = null; box.appendChild(node); }
+  });
+  sec.appendChild(box);
+  root.appendChild(sec);
+});
+
+function renderField(f) {
+  const wrap = el("div", "field");
+  if (f.type === "text" || f.type === "textarea") {
+    const lab = el("label", "l", f.label + (f.req ? "（必須）" : "")); lab.htmlFor = "f_" + f.id;
+    const inp = f.type === "text" ? document.createElement("input") : document.createElement("textarea");
+    if (f.type === "text") inp.type = "text";
+    inp.id = "f_" + f.id; inp.name = f.id; if (f.ph) inp.placeholder = f.ph;
+    wrap.append(lab, inp);
+  } else if (f.type === "radio" || f.type === "check") {
+    const fs = document.createElement("fieldset"); fs.style.border = "0"; fs.style.margin = "0"; fs.style.padding = "0"; fs.style.minWidth = "0";
+    const lg = el("legend", "l", f.label); lg.style.padding = "0";
+    const chips = el("div", "chips");
+    f.opts.forEach((o, i) => {
+      const lab = el("label", "chip" + (f.type === "check" ? " multi" : ""));
+      const inp = document.createElement("input");
+      inp.type = f.type === "radio" ? "radio" : "checkbox";
+      inp.name = f.id; inp.value = o; inp.id = "f_" + f.id + "_" + i;
+      if (f.type === "radio") inp.addEventListener("click", (e) => { if (inp.dataset.was === "1") { inp.checked = false; inp.dataset.was = ""; onChange(); } else { document.querySelectorAll('input[name="' + f.id + '"]').forEach(x => x.dataset.was = ""); inp.dataset.was = "1"; } });
+      lab.append(inp, el("span", null, o));
+      chips.appendChild(lab);
+    });
+    fs.append(lg, chips); wrap.appendChild(fs);
+  } else if (f.type === "scale") {
+    const sc = el("div", "scale");
+    f.rows.forEach(([rid, lt, rt]) => {
+      const row = el("div", "scale-row"); row.setAttribute("role", "radiogroup"); row.setAttribute("aria-label", lt + " と " + rt);
+      const dots = el("div", "dots");
+      for (let n = 1; n <= 5; n++) {
+        const lab = el("label", "dot");
+        const inp = document.createElement("input");
+        inp.type = "radio"; inp.name = "tone_" + rid; inp.value = String(n); inp.id = "f_tone_" + rid + "_" + n;
+        inp.setAttribute("aria-label", n + "（" + (n < 3 ? lt + "寄り" : n > 3 ? rt + "寄り" : "どちらでもない") + "）");
+        lab.append(inp, el("span", null, String(n)));
+        dots.appendChild(lab);
+      }
+      row.append(el("span", "lt", lt), dots, el("span", "rt", rt));
+      sc.appendChild(row);
+    });
+    wrap.appendChild(sc);
+  }
+  return wrap;
+}
+
+/* ---------- values ---------- */
+const form = $("sheet");
+function value(f) {
+  if (f.type === "text" || f.type === "textarea") return ($("f_" + f.id).value || "").trim();
+  if (f.type === "radio") { const c = form.querySelector('input[name="' + f.id + '"]:checked'); return c ? c.value : ""; }
+  if (f.type === "check") return [...form.querySelectorAll('input[name="' + f.id + '"]:checked')].map(x => x.value).join("、");
+  return "";
+}
+function scaleVals(f) {
+  return f.rows.map(([rid, lt, rt]) => { const c = form.querySelector('input[name="tone_' + rid + '"]:checked'); return { lt, rt, v: c ? c.value : "" }; });
+}
+function sectionFilled(s) {
+  return s.fields.some(f => f.type === "scale" ? scaleVals(f).some(r => r.v) : value(f));
+}
+
+/* ---------- progress & draft ---------- */
+let saveTimer = null;
+function onChange() {
+  const numbered = SECTIONS.filter(s => s.no);
+  const n = numbered.filter(sectionFilled).length;
+  $("count").textContent = "記入済み " + n + " / " + numbered.length;
+  $("barFill").style.width = (n / numbered.length * 100) + "%";
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveDraft, 400);
+}
+function snapshot() {
+  const data = {};
+  form.querySelectorAll("input,textarea").forEach(x => {
+    if (x.id === "out") return;
+    if (x.type === "radio" || x.type === "checkbox") { if (x.checked) data[x.id] = true; }
+    else if (x.value) data[x.id] = x.value;
+  });
+  return data;
+}
+function saveDraft() {
+  try { localStorage.setItem(KEY, JSON.stringify(snapshot())); $("saved").textContent = "下書き保存済み"; }
+  catch (e) { $("saved").textContent = ""; }
+}
+function loadDraft() {
+  let data = null;
+  try { data = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { data = null; }
+  if (!data) return;
+  Object.entries(data).forEach(([id, v]) => {
+    const x = document.getElementById(id); if (!x) return;
+    if (x.type === "radio" || x.type === "checkbox") { x.checked = true; if (x.type === "radio") x.dataset.was = "1"; }
+    else x.value = v;
+  });
+  $("saved").textContent = "下書きを読み込みました";
+}
+form.addEventListener("input", onChange);
+form.addEventListener("change", onChange);
+loadDraft();
+onChange();
+
+/* ---------- build output ---------- */
+function buildText() {
+  const today = new Date();
+  const d = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
+  const L = ["【ハイクオリティLP・HPデザイン制作書（記入済み）】", "記入日: " + d, ""];
+  SECTIONS.forEach(s => {
+    L.push("■ " + (s.no ? s.no + ". " : "") + s.title);
+    let any = false;
+    s.fields.forEach(f => {
+      if (f.type === "scale") {
+        scaleVals(f).forEach(r => { if (r.v) { any = true; L.push("・" + r.lt + "（1）⇔ " + r.rt + "（5）: " + r.v); } });
+      } else {
+        const v = value(f);
+        if (v) { any = true; L.push("・" + f.label.replace(/（複数可）|（あれば）/g, "") + ": " + v.replace(/\n/g, "\n　")); }
+      }
+    });
+    if (!any) L.push("・未記入（おまかせ）");
+    L.push("");
+  });
+  return L.join("\n").trim();
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const miss = [];
+  if (!$("f_person").value.trim()) miss.push("お名前");
+  if (!$("f_contact").value.trim()) miss.push("連絡先");
+  const err = $("err");
+  if (miss.length) {
+    err.textContent = miss.join("と") + "を入力してください（ページ上部の「ご記入者」欄）。";
+    err.hidden = false;
+    $(miss[0] === "お名前" ? "f_person" : "f_contact").focus();
+    return;
+  }
+  err.hidden = true;
+  const text = buildText();
+  $("out").value = text;
+  const who = ($("f_company").value.trim() ? $("f_company").value.trim() + " " : "") + $("f_person").value.trim();
+  $("mail").href = "mailto:ryuzin1031@gmail.com?subject=" + encodeURIComponent("【デザイン制作書】" + who + " 様") + "&body=" + encodeURIComponent(text);
+  $("line").href = "https://line.me/R/msg/text/?" + encodeURIComponent(text);
+  $("result").hidden = false;
+  $("copied").hidden = true;
+  $("result").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+});
+
+$("copy").addEventListener("click", () => {
+  const out = $("out"), msg = $("copied");
+  const done = (ok) => { msg.hidden = false; msg.textContent = ok ? "コピーしました。メールかLINEに貼り付けて送ってください。" : "自動でコピーできませんでした。選択された文章を長押し（またはCtrl/⌘+C）でコピーしてください。"; };
+  try {
+    navigator.clipboard.writeText(out.value).then(() => done(true), () => { out.focus(); out.select(); done(false); });
+  } catch (e) { out.focus(); out.select(); done(false); }
+});
+
+$("jumpSend").addEventListener("click", () => $("send").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }));
+
+/* ---------- clear (in-page confirm) ---------- */
+const clearWrap = $("clearWrap");
+function showClearButton() {
+  clearWrap.replaceChildren();
+  const b = el("button", "danger", "記入内容をすべて消す"); b.type = "button";
+  b.addEventListener("click", showClearConfirm);
+  clearWrap.appendChild(b);
+}
+function showClearConfirm() {
+  clearWrap.replaceChildren();
+  const c = el("span", "confirm");
+  const yes = el("button", null, "消す"); yes.type = "button";
+  const no = el("button", null, "やめる"); no.type = "button";
+  c.append(el("span", null, "記入内容をすべて消しますか？"), yes, no);
+  clearWrap.appendChild(c);
+  no.addEventListener("click", showClearButton);
+  yes.addEventListener("click", () => {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    form.reset();
+    form.querySelectorAll("input[type=radio]").forEach(x => x.dataset.was = "");
+    $("result").hidden = true;
+    onChange();
+    clearTimeout(saveTimer);
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    $("saved").textContent = "消去しました";
+    showClearButton();
+  });
+}
+showClearButton();
+})();
+</script>
+
+</body></html>
