@@ -116,7 +116,7 @@ input::placeholder,textarea::placeholder{color:var(--sub);opacity:.75}
 <div class="wrap">
   <header class="sheet-head">
     <div class="eyebrow">AIマーケプロ ｜ AI制作書 04-08</div>
-    <h1>ハイクオリティLP・HP<br>デザイン制作書</h1>
+    <h1>LP・HP<br>デザイン制作書</h1>
     <p class="lead">「ちゃんとデザインされている」と一目で伝わるLP・HPを作るための、デザイン特化のヒアリングシートです。このページで記入して、最後の「記入内容をまとめる」から送ってください。</p>
     <ul class="notes">
       <li><b>全部埋めなくて大丈夫です。</b>空欄は参考サイトから読み取るか方向性に合わせて補い、補った箇所は納品時にすべてお伝えします。</li>
@@ -162,7 +162,7 @@ input::placeholder,textarea::placeholder{color:var(--sub);opacity:.75}
   </form>
 
   <div class="foot">
-    <span>AIマーケプロ ｜ ハイクオリティLP・HPデザイン制作書</span>
+    <span>AIマーケプロ ｜ LP・HPデザイン制作書</span>
     <span id="clearWrap"><button class="danger" type="button" id="clear">記入内容をすべて消す</button></span>
   </div>
 </div>
@@ -399,7 +399,7 @@ onChange();
 function buildText() {
   const today = new Date();
   const d = today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDate();
-  const L = ["【ハイクオリティLP・HPデザイン制作書（記入済み）】", "記入日: " + d, ""];
+  const L = ["【LP・HPデザイン制作書（記入済み）】", "記入日: " + d, ""];
   SECTIONS.forEach(s => {
     L.push("■ " + (s.no ? s.no + ". " : "") + s.title);
     let any = false;
